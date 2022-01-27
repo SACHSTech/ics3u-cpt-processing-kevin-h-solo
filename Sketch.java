@@ -6,8 +6,8 @@ public class Sketch extends PApplet {
   public int xTile = 20;
   public int yTile = 20; 
   boolean[][] mapCoord = new boolean[xTile][yTile];
-  public float xTileSize = width / xTile;
-  public float yTileSize = height / yTile;
+  public float xTileSize = width / 40;
+  public float yTileSize = height / 40;
   // Each individual tile equals 40x40 pixels
 	
  
@@ -18,12 +18,19 @@ public class Sketch extends PApplet {
 
 
   public void setup() {
-    background(210, 255, 173);
+    background(80, 150, 55);
 
     for (int row = 0; row < xTile; row++) {
+      strokeWeight(2);
+      stroke(50, 110, 15);
+      int rowMultiplier = row + 1;
+      line(rowMultiplier * (2 * xTile), 0, rowMultiplier * (2 * xTile), 800);
+
       for (int column = 0; column < yTile; column++) {
+        int columnMultiplier = column + 1;
+        line(0, columnMultiplier * (2 * yTile), 800, columnMultiplier * (2 * yTile));
         if (random(1) < .25) {
-          mapCoord[xTile][yTile] = true;
+          mapCoord[xTile-1][yTile-1] = true;
         }
       }
     }
