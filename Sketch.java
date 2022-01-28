@@ -8,8 +8,14 @@ public class Sketch extends PApplet {
   boolean[][] mapCoord = new boolean[xTile][yTile];
   public float xTileSize = width / 40;
   public float yTileSize = height / 40;
-  public int playerPosX = 400;
-  public int playerPosY = 400;
+
+  public int playerPosX;
+  public int playerPosY;
+  public int indexPosX = 10;
+  public int indexPosY = 10;
+
+  public boolean hasEsc;
+  public boolean hasClicked;
   // Each individual tile equals 40x40 pixels
 	
  
@@ -64,8 +70,7 @@ public class Sketch extends PApplet {
           // triangle(xTileLocation, yTileLocation + 10, xTileLocation + 10, yTileLocation + 20, xTileLocation + 20, yTileLocation + 10);
           stroke(0);
           strokeWeight(2);
-        
-          // Draws red tiles
+          // Draws tiles
           stroke(50, 110, 15);
           fill(30, 120, 50);
           rect(40 * row, 40 * column, 40, 40);
@@ -75,18 +80,25 @@ public class Sketch extends PApplet {
           fill(95, 60, 25);
           rect(40 * (row + 20), 40 * (column + 5), 5, 10);
           fill(60, 100, 20);
-          }
-          else {
-            noFill();
-          }
-        
+        }
+        else {
+          noFill();
+        }
         
       }
     }
 
     // Draws Player WIP
     fill(255);
+    playerPosX = indexPosX * 40;
+    playerPosY = indexPosY * 40;
     rect(playerPosX, playerPosY, 40, 40);
+
+    // Menu Screen
+    if (keyPressed && keyCode == ESC) {
+      hasEsc = true;
+      background(65, 80, 60);
+    }
   }
   
   /**
@@ -94,25 +106,35 @@ public class Sketch extends PApplet {
    */
   public void keyPressed() {
     if (keyCode == UP || key == 'w') {
-      if (playerPosY >= 0 && !mapCoord[playerPosX/20 - 1][playerPosY/20 - 2]) {
-        playerPosY -= 40;
+      if (indexPosY > 0 && !mapCoord[indexPosX][indexPosY-1]) {
+        indexPosY -= 1;
       }
     }
     else if (keyCode == LEFT || key == 'a') {
-      if (playerPosX >= 0 && !mapCoord[playerPosX/20 - 2][playerPosY/20 - 1]) {
-        playerPosX -= 40;
+      if (indexPosX > 0 && !mapCoord[indexPosX-1][indexPosY]) {
+        indexPosX -= 1;
       }
     }
     else if (keyCode == DOWN || key == 's') {
-      if (playerPosY <= 800 && !mapCoord[playerPosX/20 - 1][playerPosY/20 + 2]) {
-        playerPosY += 40;
+      if (indexPosY < 20 && !mapCoord[indexPosX][indexPosY+1]) {
+        indexPosY += 1;
       }
     }
     else if (keyCode == RIGHT || key == 'd') {
-      if (playerPosX <= 800 && !mapCoord[playerPosX/20 + 2][playerPosY/20 - 1]) {
-        playerPosX += 40;
+      if (indexPosX < 20 && !mapCoord[indexPosX+1][indexPosY]) {
+        indexPosX += 1;
       }
     }
-
   }
+
+  public void mouseClicked() {
+    
+    hasClicked = true;
+  }
+
 }
+
+
+
+  
+
