@@ -6,6 +6,7 @@ public class Sketch extends PApplet {
   public int xTile = 20;
   public int yTile = 20; 
   boolean[][] mapCoord = new boolean[xTile][yTile];
+  int[][] health = new int[xTile][yTile];
   public float xTileSize = width / 40;
   public float yTileSize = height / 40;
 
@@ -16,6 +17,8 @@ public class Sketch extends PApplet {
 
   public boolean hasEsc;
   public boolean hasClicked;
+  public int currency = 0;
+
   // Each individual tile equals 40x40 pixels
 	
  
@@ -31,9 +34,10 @@ public class Sketch extends PApplet {
     // Nested for loop to 15% chance to randomly assign a tile with collision in mapCoord[][]
     for (int row = 0; row < xTile; row++) {
       for (int column = 0; column < yTile; column++) {
-    
+        
         if (random(1) < .15) {
           mapCoord[row][column] = true;
+          health[row][column] = 20;
         }
         else {
           mapCoord[row][column] = false;
@@ -64,13 +68,14 @@ public class Sketch extends PApplet {
         // float xTileLocation = xTileSize * column;
         // float yTileLocation = yTileSize * row;
 
-        if (mapCoord[row][column] && column != 10 && row != 10) {
+        if (mapCoord[row][column] && column != 10 && row != 10 && health[row][column] > 1) {
           // triangle(xTileLocation, yTileLocation, xTileLocation + 10, yTileLocation + 10, xTileLocation + 20, yTileLocation);
           // triangle(xTileLocation, yTileLocation + 5, xTileLocation + 10, yTileLocation + 15, xTileLocation + 20, yTileLocation + 5);
           // triangle(xTileLocation, yTileLocation + 10, xTileLocation + 10, yTileLocation + 20, xTileLocation + 20, yTileLocation + 10);
+          
+          // Draws obstacle tiles
           stroke(0);
           strokeWeight(2);
-          // Draws tiles
           stroke(50, 110, 15);
           fill(30, 120, 50);
           rect(40 * row, 40 * column, 40, 40);
@@ -81,8 +86,13 @@ public class Sketch extends PApplet {
           rect(40 * (row + 20), 40 * (column + 5), 5, 10);
           fill(60, 100, 20);
         }
-        else {
-          noFill();
+        // When an adjacent obstacle tile (bush) has no more health, collision is removed and turns to default colour
+        else if (health[row][column] <= 0) {
+          mapCoord[row][column] = false;
+          stroke(50, 110, 15);
+          strokeWeight(2);
+          fill(80, 150, 55);
+          rect(40 * row, 40 * column, 40, 40);
         }
         
       }
@@ -93,6 +103,12 @@ public class Sketch extends PApplet {
     playerPosX = indexPosX * 40;
     playerPosY = indexPosY * 40;
     rect(playerPosX, playerPosY, 40, 40);
+
+    // Displays the currency
+    fill(240, 160, 15);
+    textSize(30);
+    String currencyDisplay = "$" + currency;
+    text(currencyDisplay, 680, 30);
 
     // Menu Screen
     if (keyPressed && keyCode == ESC) {
@@ -128,8 +144,28 @@ public class Sketch extends PApplet {
   }
 
   public void mouseClicked() {
+    if (mapCoord[indexPosX-1][indexPosY] == true) {
+      health[indexPosX-1][indexPosY] -= 1;
+      hasClicked = true;
+      currency += 5;
+    }
+    else if (mapCoord[indexPosX+1][indexPosY] == true) {
+      health[indexPosX+1][indexPosY] -= 1;
+      hasClicked = true;
+      currency += 5;
+    }
+    else if (mapCoord[indexPosX][indexPosY+1] == true) {
+      health[indexPosX][indexPosY+1] -= 1;
+      hasClicked = true;
+      currency += 5;
+    }
+    else if (mapCoord[indexPosX][indexPosY-1] == true) {
+      health[indexPosX][indexPosY-1] -= 1;
+      hasClicked = true;
+      currency += 5;
+    }
     
-    hasClicked = true;
+    
   }
 
 }
