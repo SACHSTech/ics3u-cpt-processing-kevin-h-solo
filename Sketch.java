@@ -6,7 +6,6 @@ public class Sketch extends PApplet {
   public int xTile = 20;
   public int yTile = 20; 
   boolean[][] mapCoord = new boolean[xTile][yTile];
-  int[][] health = new int[xTile][yTile];
   public float xTileSize = width / 40;
   public float yTileSize = height / 40;
 
@@ -14,9 +13,12 @@ public class Sketch extends PApplet {
   public int playerPosY;
   public int indexPosX = 10;
   public int indexPosY = 10;
+  int[][] health = new int[xTile][yTile];
 
+  public boolean hasUpgrade = false;
   public boolean openMenu;
   public boolean hasClicked;
+  public boolean openShop;
   public int currency = 0;
 
   // Each individual tile equals 40x40 pixels
@@ -52,7 +54,8 @@ public class Sketch extends PApplet {
    */
   public void draw() {
   
-    if (openMenu == false) {
+    // If menu is not triggered, it will draw the main screen, and not draw menu screen
+    if (openMenu == false && openShop == false) {
       background(80, 150, 55);
 
       for (int row = 0; row < xTile; row++) {
@@ -81,12 +84,6 @@ public class Sketch extends PApplet {
             stroke(50, 110, 15);
             fill(30, 120, 50);
             rect(40 * row, 40 * column, 40, 40);
-            
-            // Draws Trees WIP
-            noStroke();
-            fill(95, 60, 25);
-            rect(40 * (row + 20), 40 * (column + 5), 5, 10);
-            fill(60, 100, 20);
           }
           // When an adjacent obstacle tile (bush) has no more health, collision is removed and turns to default colour
           else if (health[row][column] <= 0) {
@@ -100,10 +97,15 @@ public class Sketch extends PApplet {
         }
       }
 
-      // Draws Player WIP
-      fill(255);
+      // Draws Player onto the grid
       playerPosX = indexPosX * 40;
       playerPosY = indexPosY * 40;
+
+      fill(255);
+
+      if (hasUpgrade) {
+        fill(100, 20, 140);
+      }
       rect(playerPosX, playerPosY, 40, 40);
 
       // Displays the currency
@@ -112,8 +114,38 @@ public class Sketch extends PApplet {
       String currencyDisplay = "$" + currency;
       text(currencyDisplay, 680, 30);
     }
+
+    // If menu is triggered, it will display menu screen, and hide the main screen and shop screen
     else if (openMenu) {
-      background(50);
+      background(30, .8f);
+      fill(255);
+      textSize(100);
+      text("PAUSED", 220, 100);
+
+      // Displays Shop Button
+      stroke(200, 105, 50);
+      textSize(75);
+      fill(200, 105, 50);
+      rect(220, 300, 400, 250);
+      fill(255);
+      text("SHOP", 300, 450);
+
+    }
+    // When shop menu is true, hide main screen and menu screen
+    else if (openShop) {
+      noStroke();
+      background(80, 150, 55);
+      fill(75, 110, 135);
+      rect(200, 200, 400, 400);
+      fill(100, 20, 140);
+      rect(300, 300, 200, 100);
+      fill(255);
+      textSize(20);
+      text("UPGRADE: COST $300", 300, 350);
+      fill(240, 160, 15);
+      textSize(30);
+      String currencyDisplay = "$" + currency;
+      text(currencyDisplay, 680, 30);
     }
 
     
@@ -146,12 +178,17 @@ public class Sketch extends PApplet {
 
     if (keyCode == BACKSPACE) {
       openMenu = false;
+      openShop = false;
     }
     else if (keyCode == ENTER) {
       openMenu = true;
     }
   }
 
+  /**
+   * Main Screen: If mouse is clicked while player is adjacent to an obstacle tile, each click will deplete the health of the object by 1, and add $5.
+   * Menu Screen: When the mouse is clicked in the button, it will make openShop = true, which triggers the shop screen to appear.
+   */
   public void mouseClicked() {
     if (mapCoord[indexPosX-1][indexPosY] == true) {
       health[indexPosX-1][indexPosY] -= 1;
@@ -172,6 +209,17 @@ public class Sketch extends PApplet {
       health[indexPosX][indexPosY-1] -= 1;
       hasClicked = true;
       currency += 5;
+    }
+
+    if (openMenu && mouseX >= 220 && mouseX <= 620 && mouseY >= 300 && mouseY <= 550) {
+      openShop = true;
+      openMenu = false;
+    }
+    else if (openShop && mouseX >= 300 && mouseX <= 500 && mouseY >= 300 && mouseY <= 400) {
+      if (currency >= 300) {
+        currency -= 300;
+        hasUpgrade = true;
+      }
     }
     
     
