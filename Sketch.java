@@ -15,7 +15,7 @@ public class Sketch extends PApplet {
   public int indexPosX = 10;
   public int indexPosY = 10;
 
-  public boolean hasEsc;
+  public boolean openMenu;
   public boolean hasClicked;
   public int currency = 0;
 
@@ -51,70 +51,72 @@ public class Sketch extends PApplet {
    * Called repeatedly, anything drawn to the screen goes here
    */
   public void draw() {
-    background(80, 150, 55);
+  
+    if (openMenu == false) {
+      background(80, 150, 55);
 
-    for (int row = 0; row < xTile; row++) {
-      // Draws the grid lines going vertically
-      strokeWeight(2);
-      stroke(50, 110, 15);
-      int rowMultiplier = row + 1;
-      line(rowMultiplier * (2 * xTile), 0, rowMultiplier * (2 * xTile), 800);
+      for (int row = 0; row < xTile; row++) {
+        // Draws the grid lines going vertically
+        strokeWeight(2);
+        stroke(50, 110, 15);
+        int rowMultiplier = row + 1;
+        line(rowMultiplier * (2 * xTile), 0, rowMultiplier * (2 * xTile), 800);
 
-      for (int column = 0; column < yTile; column++) {
-        // Draws the grid lines going horizontal
-        int columnMultiplier = column + 1;
-        line(0, columnMultiplier * (2 * yTile), 800, columnMultiplier * (2 * yTile));
-        
-        // float xTileLocation = xTileSize * column;
-        // float yTileLocation = yTileSize * row;
-
-        if (mapCoord[row][column] && column != 10 && row != 10 && health[row][column] > 1) {
-          // triangle(xTileLocation, yTileLocation, xTileLocation + 10, yTileLocation + 10, xTileLocation + 20, yTileLocation);
-          // triangle(xTileLocation, yTileLocation + 5, xTileLocation + 10, yTileLocation + 15, xTileLocation + 20, yTileLocation + 5);
-          // triangle(xTileLocation, yTileLocation + 10, xTileLocation + 10, yTileLocation + 20, xTileLocation + 20, yTileLocation + 10);
+        for (int column = 0; column < yTile; column++) {
+          // Draws the grid lines going horizontal
+          int columnMultiplier = column + 1;
+          line(0, columnMultiplier * (2 * yTile), 800, columnMultiplier * (2 * yTile));
           
-          // Draws obstacle tiles
-          stroke(0);
-          strokeWeight(2);
-          stroke(50, 110, 15);
-          fill(30, 120, 50);
-          rect(40 * row, 40 * column, 40, 40);
+          // float xTileLocation = xTileSize * column;
+          // float yTileLocation = yTileSize * row;
+
+          if (mapCoord[row][column] && column != 10 && row != 10 && health[row][column] > 1) {
+            // triangle(xTileLocation, yTileLocation, xTileLocation + 10, yTileLocation + 10, xTileLocation + 20, yTileLocation);
+            // triangle(xTileLocation, yTileLocation + 5, xTileLocation + 10, yTileLocation + 15, xTileLocation + 20, yTileLocation + 5);
+            // triangle(xTileLocation, yTileLocation + 10, xTileLocation + 10, yTileLocation + 20, xTileLocation + 20, yTileLocation + 10);
+            
+            // Draws obstacle tiles
+            stroke(0);
+            strokeWeight(2);
+            stroke(50, 110, 15);
+            fill(30, 120, 50);
+            rect(40 * row, 40 * column, 40, 40);
+            
+            // Draws Trees WIP
+            noStroke();
+            fill(95, 60, 25);
+            rect(40 * (row + 20), 40 * (column + 5), 5, 10);
+            fill(60, 100, 20);
+          }
+          // When an adjacent obstacle tile (bush) has no more health, collision is removed and turns to default colour
+          else if (health[row][column] <= 0) {
+            mapCoord[row][column] = false;
+            stroke(50, 110, 15);
+            strokeWeight(2);
+            fill(80, 150, 55);
+            rect(40 * row, 40 * column, 40, 40);
+          }
           
-          // Draws Trees WIP
-          noStroke();
-          fill(95, 60, 25);
-          rect(40 * (row + 20), 40 * (column + 5), 5, 10);
-          fill(60, 100, 20);
         }
-        // When an adjacent obstacle tile (bush) has no more health, collision is removed and turns to default colour
-        else if (health[row][column] <= 0) {
-          mapCoord[row][column] = false;
-          stroke(50, 110, 15);
-          strokeWeight(2);
-          fill(80, 150, 55);
-          rect(40 * row, 40 * column, 40, 40);
-        }
-        
       }
+
+      // Draws Player WIP
+      fill(255);
+      playerPosX = indexPosX * 40;
+      playerPosY = indexPosY * 40;
+      rect(playerPosX, playerPosY, 40, 40);
+
+      // Displays the currency
+      fill(240, 160, 15);
+      textSize(30);
+      String currencyDisplay = "$" + currency;
+      text(currencyDisplay, 680, 30);
+    }
+    else if (openMenu) {
+      background(50);
     }
 
-    // Draws Player WIP
-    fill(255);
-    playerPosX = indexPosX * 40;
-    playerPosY = indexPosY * 40;
-    rect(playerPosX, playerPosY, 40, 40);
-
-    // Displays the currency
-    fill(240, 160, 15);
-    textSize(30);
-    String currencyDisplay = "$" + currency;
-    text(currencyDisplay, 680, 30);
-
-    // Menu Screen
-    if (keyPressed && keyCode == ESC) {
-      hasEsc = true;
-      background(65, 80, 60);
-    }
+    
   }
   
   /**
@@ -140,6 +142,13 @@ public class Sketch extends PApplet {
       if (indexPosX < 20 && !mapCoord[indexPosX+1][indexPosY]) {
         indexPosX += 1;
       }
+    }
+
+    if (keyCode == BACKSPACE) {
+      openMenu = false;
+    }
+    else if (keyCode == ENTER) {
+      openMenu = true;
     }
   }
 
